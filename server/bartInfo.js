@@ -14,7 +14,7 @@ module.exports = {
     });
   },
   getRealTimeEstimate: function(cb) {
-    request('http://api.bart.gov/api/etd.aspx?cmd=etd&orig=12th&key=' + publicBartAPI, function(err, res) {
+    request('http://api.bart.gov/api/stn.aspx?cmd=stns&key=MW9S-E7SL-26DU-VV8V', function(err, res) {
       if(err) {throw err;}
       res = xml2json.toJson(res.body);
       cb(res);

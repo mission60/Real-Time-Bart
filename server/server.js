@@ -15,7 +15,8 @@ app.use(express.static(path.join(__dirname, "../client")));
 app.get('/api/realTimeEstimate', function(req, res) {
   bart.getRealTimeEstimate(function(data) {
     data = JSON.parse(data);
-    res.send(data);
+    console.log(data.root.stations.station)
+    res.send(data.root.stations.station);
   });
 });
 
@@ -32,6 +33,7 @@ app.get('/api/stationList', function(req, res) {
     res.send(data);
   })
 })
+
 
 // how are we going to pass data from real time estimate? callback? promise?
 
