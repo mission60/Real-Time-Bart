@@ -7,9 +7,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.js"></script>
     <script src="app/service/service.js"></script>
     <script src="app/controllers/bartController.js"></script>
+    <script src="app/controllers/indexCtrl.js"></script>
     <script src="app/app.js"></script>
 
-  <body ng-controller="bartController">
-    <h1>Hello World</h1>
+  <body ng-controller="indexCtrl">
+   <div>
+    <h1>Real Time Bart</h1>
+    <span ng-click="getBartInfo()">Bart</span>
+  </div>
+  <div ng-view></div>
   </body>
 </html>

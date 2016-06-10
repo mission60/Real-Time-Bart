@@ -8,7 +8,7 @@ var publicBartAPI = "MW9S-E7SL-26DU-VV8V";
 module.exports = {
   getSpecialSched: function(cb) {
     var text = [];
-    request('http://api.bart.gov/api/sched.aspx?cmd=special&key=' + publicBartAPI, function(err, res, body) {
+    request('http://api.bart.gov/api/sched.aspx?cmd=special&key=' + publicBartAPI, function(err, res) {
       if(err) {throw err;}
       res = xml2json.toJson(res.body);
       cb(res);
