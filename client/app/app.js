@@ -3,13 +3,21 @@
 angular.module('app', [
   'app.service',
   'app.bartInfo',
+  'app.index',
   'ngRoute'
 ])
 .config(function($routeProvider, $locationProvider) {
   $routeProvider
   .when('/', {
-    templateUrl: '../index.html',
-    controllerkey: 'bartController' 
+    templateUrl: 'app/views/indexView.html',
+    controller: 'indexCtrl' 
   })
-  $locationProvider.html5Mode(true);
+  .when('/bartInfo', {
+    templateUrl: 'app/views/bartInfo.html',
+    controller: 'bartController'
+  })
+  $locationProvider.html5Mode({
+    enabled: true,
+    requireBase: false
+  });
 });

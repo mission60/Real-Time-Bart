@@ -12,20 +12,20 @@ var bart = require("./bartInfo.js");
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "../client")));
 
-// app.use(function(req, res) {
-//   res.sendfile(path.resolve(__dirname + "../client/index.html"));
-// });
-
-app.get('/bartInfo', function(req, res) {
-  console.log('res', res);
-  console.log('req', req);
+app.get('/api/realTimeEstimate', function(req, res) {
   bart.getRealTimeEstimate(function(data) {
-    console.log(data);
+    data = JSON.parse(data);
     res.send(data);
   });
 });
-// res.send(bart.getRealTimeEstimate());
-// bart.getSpecialSched();
+
+app.get('/api/specialSched', function(req, res) {
+  bart.getSpecialSched(function(data) {
+    data = JSON.parse(data);
+    res.send(data);
+  })
+})
+
 // how are we going to pass data from real time estimate? callback? promise?
 
 app.listen(port, function() {

@@ -1,16 +1,28 @@
+'use strict';
 angular.module('app.service', [])
 .factory('Bart', function($http) {
-  var get = function() {
+  var getRTE = function() {
     return $http({
       method: 'GET',
-      url: '/bartInfo'
+      url: '/api/realTimeEstimate'
     })
     .then(function(resp) {
-      console.log(resp);
+      return resp.data.root;
     });
+  };
+
+  var getSS = function() {
+    return $http({
+      method: 'GET',
+      url: '/api/specialSched'
+    })
+    .then(function(resp) {
+      return resp.data.root;
+    })
   }
 
   return {
-    get: get
+    getRTE: getRTE,
+    getSS: getSS
   };
 })
