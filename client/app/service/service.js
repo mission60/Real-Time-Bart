@@ -1,14 +1,16 @@
 angular.module('app.service', [])
-
-.facotry('Bart', function($http) {
+.factory('Bart', function($http) {
   var get = function() {
     return $http({
       method: 'GET',
-      url: ???
+      url: '/bartInfo'
     })
     .then(function(resp) {
-      return resp;
       console.log(resp);
     });
+  }
+
+  return {
+    get: get
   };
 })
