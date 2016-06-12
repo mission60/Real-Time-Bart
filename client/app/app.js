@@ -10,7 +10,7 @@ angular.module('app', [
   $routeProvider
   .when('/', {
     templateUrl: 'app/views/indexView.html',
-    controller: 'indexCtrl' 
+    controller: 'indexController' 
   })
   .when('/bartInfo', {
     templateUrl: 'app/views/bartInfo.html',

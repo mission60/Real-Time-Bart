@@ -17,7 +17,7 @@ angular.module('app.service', [])
       url: '/api/specialSched'
     })
     .then(function(resp) {
-      return resp.data.root;
+      return resp.data.root.special_schedules.special_schedule;
     })
   }
 
@@ -25,4 +25,4 @@ angular.module('app.service', [])
     getRTE: getRTE,
     getSS: getSS
   };
-})
+});
