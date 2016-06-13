@@ -18,11 +18,22 @@ angular.module('app.service', [])
     })
     .then(function(resp) {
       return resp.data.root.special_schedules.special_schedule;
+    });
+  };
+
+  var getSL = function() {
+    return $http({
+      method: 'GET',
+      url: '/api/stationList'
     })
+    .then(function(resp) {
+      return resp.data.root.stations;
+    });
   }
 
   return {
     getRTE: getRTE,
-    getSS: getSS
+    getSS: getSS,
+    getSL: getSL
   };
 });
