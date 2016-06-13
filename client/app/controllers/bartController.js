@@ -15,6 +15,38 @@ angular.module('app.bartInfo', [])
       }
     })    
     $scope.specialSched = specialSched;
-    console.log(specialSched);
   });
+
+  Bart.getSL()
+  .then(function(stationList) {
+    console.log(stationList);
+  });
+}])
+.directive('d3-station', [function() {
+  return {
+    restrict: 'E',
+    scope: {
+      data: '='
+    },
+    link: function(scope, element) {
+      var width = 600;
+      var height = 600;
+
+      var canvas = d3.select(element[0])
+                    .append('svg')
+                    .attr('width', width)
+                    .attr('height', height)
+                    .style('border', '1px solid black');
+      
+      var projection = d3.geo.mercator();
+
+      scope.render = function(data) {
+        if(data === undefined) {
+          return;
+        }
+
+        svg.selectAll('*').remove();
+      }
+    }
+  }
 }]);

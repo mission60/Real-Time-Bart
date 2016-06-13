@@ -23,6 +23,13 @@ app.get('/api/specialSched', function(req, res) {
   bart.getSpecialSched(function(data) {
     data = JSON.parse(data);
     res.send(data);
+  });
+});
+
+app.get('/api/stationList', function(req, res) {
+  bart.getStationList(function(data) {
+    data = JSON.parse(data);
+    res.send(data);
   })
 })
 
