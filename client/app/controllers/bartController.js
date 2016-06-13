@@ -1,6 +1,7 @@
 'use strict';
 angular.module('app.bartInfo', [])
 .controller('bartController', ['$scope', 'Bart', function($scope, Bart) {
+  // $scope.stationList;
   Bart.getRTE()
   .then(function(realTimeEstimate) {
     $scope.realTimeEstimate = realTimeEstimate;
@@ -19,34 +20,48 @@ angular.module('app.bartInfo', [])
 
   Bart.getSL()
   .then(function(stationList) {
-    console.log(stationList);
+    // console.log(stationList.station)
+    $scope.stationList = stationList;
+    return stationList;
   });
 }])
-.directive('d3-station', [function() {
+.directive('d3Stations', [function() {
   return {
-    restrict: 'E',
-    scope: {
-      data: '='
-    },
+    restrict: 'EA',
+    scope: false,
     link: function(scope, element) {
-      var width = 600;
-      var height = 600;
-
+      var width = 900;
+      var height = 700;
       var canvas = d3.select(element[0])
                     .append('svg')
                     .attr('width', width)
                     .attr('height', height)
                     .style('border', '1px solid black');
-      
+                    
+      var g = canvas.append('g');
       var projection = d3.geo.mercator();
-
+      projection.scale(80000).translate([100, 300]).center([-122.413756, 37.779528]);
+      
       scope.render = function(data) {
         if(data === undefined) {
           return;
         }
+        canvas.selectAll('*').remove();
 
-        svg.selectAll('*').remove();
-      }
+        canvas.selectAll('circle')
+              .data(data.station)
+              .enter().append('circle')
+              .attr("cx", function(d) { return projection([d.gtfs_longitude, d.gtfs_latitude])[0] })
+              .attr("cy", function(d) { return projection([d.gtfs_longitude, d.gtfs_latitude])[1] })
+              .attr("r", "2px")
+              .attr("fill", "red");
+      };
+      
+      scope.$watch('stationList', function() {
+        if(scope.stationList !== undefined){
+          scope.render(scope.stationList);
+        }
+      });
     }
   }
 }]);
