@@ -31,9 +31,23 @@ angular.module('app.service', [])
     });
   }
 
+  var getTrainTime = function(station){
+    console.log('CLICKED station', station)
+    return $http({
+      url:'/api/trainTime',
+      data: {station: station},//JSON.parse(d)
+      method:'POST'//not working in here...
+    })
+    .then(function(resp){
+      console.log('inside servicejs', resp)
+      return resp;
+    })
+  }
+
   return {
     getRTE: getRTE,
     getSS: getSS,
-    getSL: getSL
+    getSL: getSL,
+    getTrainTime: getTrainTime
   };
 });
