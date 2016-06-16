@@ -28,11 +28,11 @@ module.exports = {
     });
   },
   getTrainTimes: function(data, cb){
-    console.log('paramsOBJ!!!!', data)
+    // console.log('paramsOBJ!!!!', data)
     request('http://api.bart.gov/api/etd.aspx?cmd=etd&orig=' + data.station + '&key=MW9S-E7SL-26DU-VV8V', function(err, res){
       if(err){throw err;}
       res = xml2json.toJson(res.body)
-      console.log('bartinfojs response', res)
+      // console.log('bartinfojs response', res)
       cb(res);
     });
   }
