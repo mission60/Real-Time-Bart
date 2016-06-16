@@ -29,11 +29,23 @@ angular.module('app.service', [])
     .then(function(resp) {
       return resp.data.root.stations;
     });
-  }
+  };
+
+  var getTrainTime = function(station){
+    return $http({
+      url:'/api/trainTime',
+      data: {station: station},//JSON.parse(d)
+      method:'POST'//not working in here...
+    })
+    .then(function(resp){
+      return resp.data.root.station;
+    });
+  };
 
   return {
     getRTE: getRTE,
     getSS: getSS,
-    getSL: getSL
+    getSL: getSL,
+    getTrainTime: getTrainTime
   };
 });

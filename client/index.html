@@ -2,15 +2,18 @@
 <html lang="en" ng-app="app">
   <head>
     <meta charset="utf-8">
-    <script src="http://d3js.org/d3.v3.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js"></script>
     <script src="http://d3js.org/topojson.v1.min.js"></script>
+    <script src='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.css' rel='stylesheet' />
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.js"></script>
     <script src="app/service/service.js"></script>
     <script src="app/controllers/bartController.js"></script>
     <script src="app/controllers/indexController.js"></script>
     <script src="app/app.js"></script>
-
   <body ng-controller="indexController">
    <div>
     <h1>Real Time Bart</h1>

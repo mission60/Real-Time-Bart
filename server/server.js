@@ -30,10 +30,18 @@ app.get('/api/stationList', function(req, res) {
   bart.getStationList(function(data) {
     data = JSON.parse(data);
     res.send(data);
-  })
-})
+  });
+});
 
-// how are we going to pass data from real time estimate? callback? promise?
+app.post('/api/trainTime', function(req, res){
+  console.log('wednesday', req.body)///there is nothing on this req that is able to find
+  bart.getTrainTimes(req.body, function(data){
+    data = JSON.parse(data);
+    console.log('inside server.js', data)
+    res.send(data);
+  });
+});
+
 
 app.listen(port, function() {
   console.log("Listening on port " + port);
