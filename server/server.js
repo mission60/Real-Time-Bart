@@ -34,10 +34,8 @@ app.get('/api/stationList', function(req, res) {
 });
 
 app.post('/api/trainTime', function(req, res){
-  console.log('wednesday', req.body)///there is nothing on this req that is able to find
-  bart.getTrainTimes(req.body, function(data){
+  bart.getRealTimeEstimate(req.body, function(data){
     data = JSON.parse(data);
-    console.log('inside server.js', data)
     res.send(data);
   });
 });
