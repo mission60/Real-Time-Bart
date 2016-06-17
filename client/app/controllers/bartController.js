@@ -90,7 +90,7 @@ angular.module('app.bartInfo', [])
               direction: etd.estimate.map(function(item) {
                 return item.direction;
               }),
-              times: etd.estimate.map(function(item) {
+              time: etd.estimate.map(function(item) {
                 return item.minutes;
               })
             });
@@ -112,20 +112,25 @@ angular.module('app.bartInfo', [])
                 color = item.estimate.color;
                 minutes = item.estimate.minutes;
               }
-
               accum.push({
                 name: item.destination,
                 color: color,
                 direction: direction,
-                times: minutes
+                time: minutes
               });
               return accum;
             }, result);
           }
-          console.log("RESULT:", result);
+          // console.log("RESULT:", result);
           return result;
         }
-
+        function timing(data){
+          var str ='';
+         for(var i = 0; i < data.length; i++){
+          str += " Name " + data[i].name + " time " + data[i].time;
+         }
+          return str;
+        }
 
         var station = g.selectAll('circle')
               .data(data.station)
@@ -138,8 +143,8 @@ angular.module('app.bartInfo', [])
                 // console.log('this is info',info)
                  div.transition()        
                 // .duration(200)      
-            .style("opacity", .9);     
-            div .html(getEtd(info.etd))       
+            .style("opacity", .9)     
+            div .html(timing(getEtd(info.etd)))       
               })//loop through the data and append it inside the div
             }) .on("mouseout", function(d) {       
             div.transition()        
@@ -147,7 +152,6 @@ angular.module('app.bartInfo', [])
                 .style("opacity", 0);   
             });
 
-              
         var text = g.selectAll('text')
                     .data(data.station)
                     .enter().append('text')
