@@ -20,7 +20,6 @@ angular.module('app.bartInfo', [])
 
   Bart.getSL()
   .then(function(stationList) {
-    // console.log(stationList.station)
     $scope.stationList = stationList;
     return stationList;
   });
@@ -78,9 +77,54 @@ angular.module('app.bartInfo', [])
         // console.log('aa',project({lat: 37.591208, lng: -122.017867}))
         // var tip = d3.select('d3-stations').append('div').attr('class', 'tooltip');
         // project takes input of an object
-        var div = d3.select("body").append("div")   
-                .attr("class", "tooltip")               
-                .style("opacity",0);
+        var div = d3.select("body").append("div").attr("class", "tooltip").style("opacity",0);
+
+       function getEtd(etd) {
+          var result = [];
+          if(!Array.isArray(etd)) {
+            result.push({
+              name: etd.destination,
+              color: etd.estimate.map(function(item) {
+                return item.color;
+              }),
+              direction: etd.estimate.map(function(item) {
+                return item.direction;
+              }),
+              times: etd.estimate.map(function(item) {
+                return item.minutes;
+              })
+            });
+          } else {
+            etd.reduce(function(accum, item) {
+              var direction, color, minutes;
+              if(Array.isArray(item.estimate)) {
+                direction = item.estimate.map(function(item) {
+                  return item.direction;
+                });
+                color = item.estimate.map(function(item) {
+                  return item.color;
+                });
+                minutes = item.estimate.map(function(item) {
+                  return item.minutes;
+                });
+              } else {
+                direction = item.estimate.direction;
+                color = item.estimate.color;
+                minutes = item.estimate.minutes;
+              }
+
+              accum.push({
+                name: item.destination,
+                color: color,
+                direction: direction,
+                times: minutes
+              });
+              return accum;
+            }, result);
+          }
+          console.log("RESULT:", result);
+          return result;
+        }
 
 
         var station = g.selectAll('circle')
@@ -91,16 +135,12 @@ angular.module('app.bartInfo', [])
               .on('mouseover', function(data) {
               scope.Bart.getTrainTime(data.abbr)
               .then(function(info) {
+                // console.log('this is info',info)
                  div.transition()        
                 // .duration(200)      
             .style("opacity", .9);     
-            div .html(info.data.root.station.name + " Station" + "<br/>"  +
-            "Train to " + info.data.root.station.etd[0].destination + " in " + JSON.stringify(info.data.root.station.etd[0].estimate[0].minutes) + " minutes" +"<br/>" +
-            "Train to " + info.data.root.station.etd[1].destination + " in " + JSON.stringify(info.data.root.station.etd[1].estimate[0].minutes) + " minutes"
-              )  
-            console.log('station info', info)
-               
-              })
+            div .html(getEtd(info.etd))       
+              })//loop through the data and append it inside the div
             }) .on("mouseout", function(d) {       
             div.transition()        
                 .duration(500)      

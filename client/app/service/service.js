@@ -40,7 +40,7 @@ angular.module('app.service', [])
     })
     .then(function(resp){
       // console.log('inside servicejs', resp)
-      return resp;
+      return resp.data.root.station
     })
   }
 
