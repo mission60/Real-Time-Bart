@@ -80,6 +80,7 @@ angular.module('app.bartInfo', [])
         var div = d3.select("body").append("div").attr("class", "tooltip").style("opacity",0);
 
        function getEtd(etd) {
+        // console.log('etd!!',etd)
           var result = [];
           if(!Array.isArray(etd)) {
             result.push({
@@ -124,13 +125,78 @@ angular.module('app.bartInfo', [])
           // console.log("RESULT:", result);
           return result;
         }
+        function realTime(etd) {
+          var result = [];
+          if(!Array.isArray(etd)) {
+            result.push({
+              name: etd.destination,
+            
+              time: etd.estimate.map(function(item) {
+                return item.minutes;
+              })
+            });
+          } else {
+            etd.reduce(function(accum, item) {
+              var direction, color, minutes;
+              if(Array.isArray(item.estimate)) {
+                direction = item.estimate.map(function(item) {
+                  return item.direction;
+                });
+                minutes = item.estimate.map(function(item) {
+                  return item.minutes;
+                });
+              } else {
+               
+                color = item.estimate.color;
+                minutes = item.estimate.minutes;
+              }
+              accum.push({
+                name: item.destination,
+               
+                time: minutes
+              });
+              return accum;
+            }, result);
+          }
+          // console.log("RESULT:", result);
+          return result;
+        }
         function timing(data){
           var str ='';
          for(var i = 0; i < data.length; i++){
-          str += " Name " + data[i].name + " time " + data[i].time;
-         }
+            // console.log(data[i].direction)
+            // console.log(data[i])
+          str += "Train to " + data[i].name + " in " + data[i].time +' minutes' + '\n'         
+          // console.log(str, str2, 'str3!',str3)
+          }
           return str;
         }
+
+
+  
+
+  var route1 = ['PITT','NCON','CONC','PHIL','WCRK','LAFY','ORIN','ROCK','MCAR','19TH','12TH','WOAK','EMBR','MONT','POWL','CIVC','16TH','24TH','GLEN','BALB','DALY','COLM','SSAN','SBRN','SFIA','MLBR']
+ 
+  var route2 = ['MLBR','SFIA','SBRN','SSAN','COLM','DALY','BALB','GLEN','24TH','16TH','CIVC','POWL','MONT','EMBR','WOAK','12TH','19TH','MCAR','ROCK','ORIN','LAFY','WCRK','PHIL','CONC','NCON','PITT']
+
+      // setTimeout(function(){route2.forEach(function(el){
+      //   scope.Bart.getTrainTime(el)
+      //   .then(function(element){
+      //     console.log('Current Station '+ el + " \n" + timing(getEtd(element.etd)))
+      //   })
+      // })},2000);
+    
+   // route1.forEach(function(el){
+      // var result =[]
+      //   scope.Bart.getTrainTime(el)
+      //   .then(function(element){
+        
+      //     console.log(realTime(element.etd))
+          
+      //   })
+      // })
+      
+ 
 
         var station = g.selectAll('circle')
               .data(data.station)
@@ -140,7 +206,7 @@ angular.module('app.bartInfo', [])
               .on('mouseover', function(data) {
               scope.Bart.getTrainTime(data.abbr)
               .then(function(info) {
-                // console.log('this is info',info)
+                    console.log('info!!', info)
                  div.transition()        
                 // .duration(200)      
             .style("opacity", .9)     
