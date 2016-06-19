@@ -1,8 +1,8 @@
 'use strict';
-var request = require("request");
-var xml2json = require("xml2json");
+var request = require('request');
+var xml2json = require('xml2json');
 // var axios = require("axios");
-var publicBartAPI = "MW9S-E7SL-26DU-VV8V";
+var publicBartAPI = 'MW9S-E7SL-26DU-VV8V';
 
 
 module.exports = {
@@ -13,13 +13,13 @@ module.exports = {
       cb(res);
     });
   },
-  // getRealTimeEstimate: function(cb) {
-  //   request('http://api.bart.gov/api/etd.aspx?cmd=etd&orig=12th&key=' + publicBartAPI, function(err, res) {
-  //     if(err) {throw err;}
-  //     res = xml2json.toJson(res.body);
-  //     cb(res);
-  //   });
-  // },
+  getRoute: function(cb) {
+    request('http://api.bart.gov/api/route.aspx?cmd=routes&key=' + publicBartAPI, function(err, res) {
+      if(err) {throw err;}
+      res = xml2json.toJson(res.body);
+      cb(res);
+    });
+  },
   getStationList: function(cb) {
     request('http://api.bart.gov/api/stn.aspx?cmd=stns&key=' + publicBartAPI, function(err, res) {
       if(err) {throw err;}
@@ -27,8 +27,8 @@ module.exports = {
       cb(res);
     });
   },
-  getRealTimeEstimate: function(data, cb){
-    request('http://api.bart.gov/api/etd.aspx?cmd=etd&orig=' + data.station + '&key=' + publicBartAPI, function(err, res){
+  getRealTimeEstimate: function(data, cb) {
+    request('http://api.bart.gov/api/etd.aspx?cmd=etd&orig=' + data.station + '&key=' + publicBartAPI, function(err, res) {
       if(err){throw err;}
       res = xml2json.toJson(res.body)
       cb(res);

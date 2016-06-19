@@ -1,15 +1,15 @@
 'use strict';
 angular.module('app.service', [])
 .factory('Bart', function($http) {
-  // var getRTE = function() {
-  //   return $http({
-  //     method: 'GET',
-  //     url: '/api/realTimeEstimate'
-  //   })
-  //   .then(function(resp) {
-  //     return resp.data.root;
-  //   });
-  // };
+  var getRoute = function() {
+    return $http({
+      method: 'GET',
+      url: '/api/routes'
+    })
+    .then(function(resp) {
+      return resp.data.root.routes.route;
+    });
+  };
 
   var getSS = function() {
     return $http({
@@ -34,8 +34,8 @@ angular.module('app.service', [])
   var getRTE = function(station){
     return $http({
       url:'/api/trainTime',
-      data: {station: station},//JSON.parse(d)
-      method:'POST'//not working in here...
+      data: {station: station},
+      method:'POST'
     })
     .then(function(resp){
       return resp.data.root.station;
@@ -45,6 +45,7 @@ angular.module('app.service', [])
   return {
     getSS: getSS,
     getSL: getSL,
-    getRTE: getRTE
+    getRTE: getRTE,
+    getRoute: getRoute
   };
 });
