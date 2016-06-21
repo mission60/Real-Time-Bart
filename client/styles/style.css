@@ -15,9 +15,10 @@
   stroke-width: 1.5px;
 }
 
-div.tooltip {                        
-  width: 200px;                  
-  height: 100px;                 
+div.tooltip {
+  position: absolute;
+  width: 350px;                  
+  height: relative;                 
   padding: 2px;             
   font: 12px sans-serif;        
   background: lightsteelblue;   
