@@ -1,13 +1,13 @@
 'use strict';
 angular.module('app.service', [])
 .factory('Bart', function($http) {
-  var getRTE = function() {
+  var getRoute = function() {
     return $http({
       method: 'GET',
-      url: '/api/realTimeEstimate'
+      url: '/api/routes'
     })
     .then(function(resp) {
-      return resp.data.root;
+      return resp.data.root.routes.route;
     });
   };
 
@@ -29,25 +29,23 @@ angular.module('app.service', [])
     .then(function(resp) {
       return resp.data.root.stations;
     });
-  }
+  };
 
-  var getTrainTime = function(station){
-    // console.log('CLICKED station', station)
+  var getRTE = function(station){
     return $http({
       url:'/api/trainTime',
-      data: {station: station},//JSON.parse(d)
-      method:'POST'//not working in here...
+      data: {station: station},
+      method:'POST'
     })
     .then(function(resp){
-      // console.log('inside servicejs', resp)
-      return resp.data.root.station
-    })
-  }
+      return resp.data.root.station;
+    });
+  };
 
   return {
-    getRTE: getRTE,
     getSS: getSS,
     getSL: getSL,
-    getTrainTime: getTrainTime
+    getRTE: getRTE,
+    getRoute: getRoute
   };
 });
