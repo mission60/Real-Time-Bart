@@ -129,7 +129,7 @@ angular.module('app.bartInfo', [])
           routeData.forEach(function(item) {
             filteredData.push(getEtd(item));
           });
-          console.log('dddd', filteredData);
+          console.log('Route 1 stations', filteredData);
           for(var i = 0; i < filteredData.length; i++) {
             if(filteredData[i].length > 1) {
               for(var j = 0; j < filteredData[i].length; j++) {
