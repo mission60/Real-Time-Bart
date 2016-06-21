@@ -38,3 +38,26 @@ module.exports = {
   }
 
 };
+
+// var stationRoute = { 
+// route1:['PITT','NCON','CONC','PHIL','WCRK','LAFY','ORIN','ROCK','MCAR','19TH','12TH','WOAK','EMBR','MONT','POWL','CIVC','16TH','24TH','GLEN','BALB','DALY','COLM','SSAN','SBRN','SFIA','MLBR'],//Pittsburg/Bay Point - SFIA/Millbrae/PITT-SFIA/ origin PITT//26 stations
+
+// route2 : ['MLBR','SFIA','SBRN','SSAN','COLM','DALY','BALB','GLEN','24TH','16TH','CIVC','POWL','MONT','EMBR','WOAK','12TH','19TH','MCAR','ROCK','ORIN','LAFY','WCRK','PHIL','CONC','NCON','PITT'],//Millbrae/SFIA - Pittsburg/Bay Point//SFIA-PITT/orgin MILB 26 stations
+
+// route3: ['FRMT','UCTY','SHAY','HAYW','BAYF','SANL','COLS','FTVL','LAKE','12TH','19TH','MCAR','ASHB','DBRK','NBRK','PLZA','DELN','RICH'],//Fremont - Richmond//FRMT-RICH//orgn frmt//19
+
+// route4: ['RICH','DELN','PLZA','NBRK','DBRK','ASHB','MCAR','19TH','12TH','LAKE','FTVL','COLS','SANL','BAYF','HAYW','SHAY','UCTY','FRMT'],//Richmond - Fremont//orgn fremont// 18stations
+
+// route5: ['FRMT','UCTY','SHAY','HAYW','BAYF','SANL','COLS','FTVL','LAKE','WOAK','EMBR','MONT','POWL','CIVC','16TH','24TH','GLEN','BALB','DALY'],//Fremont-Daly City//orgn fremont//19stations
+
+// route6: ['DALY','BALB','GLEN','24TH','16TH','CIVC','POWL','MONT','EMBR','WOAK','LAKE','FTVL','COLS','SANL','BAYF','HAYW','SHAY','UCTY','FRMT'],
+
+// route7: ['RICH','DELN','PLZA','NBRK','DBRK','ASHB','MCAR','19TH','12TH','WOAK','EMBR','MONT','POWL','CIVC','16TH','24TH','GLEN','BALB','DALY','COLM','SSAN','SBRN','MLBR'],//23station
+
+// route8: ['MLBR','SBRN','SSAN','COLM','DALY','BALB','GLEN','24TH','16TH','CIVC','POWL','MONT','EMBR','WOAK','12TH','19TH','MCAR','ASHB','DBRK','NBRK','PLZA','DELN','RICH'],
+
+// route11: ['DUBL','WDUB','CAST','BAYF','SANL','COLS','FTVL','LAKE','WOAK','EMBR','MONT','POWL','CIVC','16TH','24TH','GLEN','BALB','DALY'],//17 stations
+
+// route12: ['DALY','BALB','GLEN','24TH','16TH','CIVC','POWL','MONT','EMBR','WOAK','LAKE','FTVL','COLS','SANL','BAYF','CAST','WDUB','DUBL']
+// }
+

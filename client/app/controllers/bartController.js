@@ -79,6 +79,18 @@ angular.module('app.bartInfo', [])
         // project takes input of an object
         var div = d3.select("body").append("div").attr("class", "tooltip").style("opacity",0);
 
+data.station.forEach(function(el){
+  // console.log(el.abbr, 'latitude '+ el.lat, 'longitude ' + el.lng)
+})
+
+var stationData = data.station.forEach(function(el){
+  var result = []
+  result.push(el.lat, el.lng)
+  // console.log(result)
+  return result;
+  // console.log(el.abbr, 'latitude '+ el.lat, 'longitude ' + el.lng)
+})
+
        function getEtd(etd) {
         // console.log('etd!!',etd)
           var result = [];
@@ -125,59 +137,19 @@ angular.module('app.bartInfo', [])
           // console.log("RESULT:", result);
           return result;
         }
-        function realTime(etd) {
-          var result = [];
-          if(!Array.isArray(etd)) {
-            result.push({
-              name: etd.destination,
-            
-              time: etd.estimate.map(function(item) {
-                return item.minutes;
-              })
-            });
-          } else {
-            etd.reduce(function(accum, item) {
-              var direction, color, minutes;
-              if(Array.isArray(item.estimate)) {
-                direction = item.estimate.map(function(item) {
-                  return item.direction;
-                });
-                minutes = item.estimate.map(function(item) {
-                  return item.minutes;
-                });
-              } else {
-               
-                color = item.estimate.color;
-                minutes = item.estimate.minutes;
-              }
-              accum.push({
-                name: item.destination,
-               
-                time: minutes
-              });
-              return accum;
-            }, result);
-          }
-          // console.log("RESULT:", result);
-          return result;
-        }
         function timing(data){
           var str ='';
          for(var i = 0; i < data.length; i++){
             // console.log(data[i].direction)
             // console.log(data[i])
-          str += "Train to " + data[i].name + " in " + data[i].time +' minutes' + '\n'         
+          str +=  data[i].name + " in " + data[i].time + '\n' +'<br/>'        
           // console.log(str, str2, 'str3!',str3)
           }
           return str;
         }
-
-
-  
-
-  var route1 = ['PITT','NCON','CONC','PHIL','WCRK','LAFY','ORIN','ROCK','MCAR','19TH','12TH','WOAK','EMBR','MONT','POWL','CIVC','16TH','24TH','GLEN','BALB','DALY','COLM','SSAN','SBRN','SFIA','MLBR']
+      var route1 = ['PITT','NCON','CONC','PHIL','WCRK','LAFY','ORIN','ROCK','MCAR','19TH','12TH','WOAK','EMBR','MONT','POWL','CIVC','16TH','24TH','GLEN','BALB','DALY','COLM','SSAN','SBRN','SFIA','MLBR']
  
-  var route2 = ['MLBR','SFIA','SBRN','SSAN','COLM','DALY','BALB','GLEN','24TH','16TH','CIVC','POWL','MONT','EMBR','WOAK','12TH','19TH','MCAR','ROCK','ORIN','LAFY','WCRK','PHIL','CONC','NCON','PITT']
+      var route2 = ['MLBR','SFIA','SBRN','SSAN','COLM','DALY','BALB','GLEN','24TH','16TH','CIVC','POWL','MONT','EMBR','WOAK','12TH','19TH','MCAR','ROCK','ORIN','LAFY','WCRK','PHIL','CONC','NCON','PITT']
 
       // setTimeout(function(){route2.forEach(function(el){
       //   scope.Bart.getTrainTime(el)
@@ -185,18 +157,16 @@ angular.module('app.bartInfo', [])
       //     console.log('Current Station '+ el + " \n" + timing(getEtd(element.etd)))
       //   })
       // })},2000);
-    
-   // route1.forEach(function(el){
-      // var result =[]
-      //   scope.Bart.getTrainTime(el)
-      //   .then(function(element){
-        
-      //     console.log(realTime(element.etd))
-          
-      //   })
-      // })
-      
+    var route1 =[{x:38.018914, y:-121.945154},{x:38.003275, y:-122.024597},{x:37.973737, y:-122.029095},{x:37.928403, y:-122.056013},{x:37.905628, y:-122.067423},{x:37.893394, y:-122.123801},{x:37.878360, y:-122.183791},{x:37.844601, y:-122.251793},{x:37.828415, y:-122.267227},{x:37.807871, y:-122.269029},{x:37.803664, y:-122.271604},{x:37.804674, y:-122.294582},{x:37.792976, y:-122.39674},{x:37.789256, y:-122.401407},{x:37.784991, y:-122.406857},{x:37.779528, y:-122.413756},{x:37.765062, y:-122.419694},{x:37.752254, y:-122.418466},{x:37.732921, y:-122.434092},{x:37.721980, y:-122.447442},{x:37.706120, y:-122.469007},{x:37.684638, y:-122.466233},{x:37.664174, y:-122.444116},{x:37.637753, y:-122.416038},{x:37.616035, y:-122.392612},{x:37.599787, y:-122.38666}]
  
+      var arr=[];
+      route1.forEach(function(el){
+       arr.push(scope.Bart.getTrainTime(el))
+        })
+        Promise.all(arr).then(function(element){
+          // console.log(element)
+          // console.log(getTime(element));
+        })
 
         var station = g.selectAll('circle')
               .data(data.station)
@@ -225,9 +195,6 @@ angular.module('app.bartInfo', [])
                     .text(function(d) { return d.abbr; });
 
         function update() {
-          // We need to reposition our SVG and our containing group when the map
-          // repositions via zoom or pan
-          // https://github.com/zetter/voronoi-maps/blob/master/lib/voronoi_map.js
           var bounds = map.getBounds();
           var topLeft = map.latLngToLayerPoint(bounds.getNorthWest())
           var bottomRight = map.latLngToLayerPoint(bounds.getSouthEast())
@@ -247,14 +214,26 @@ angular.module('app.bartInfo', [])
             y: function(d) { return project({lat: d.lat, lng: d.lng}).y + 5 }
           });
         }
+
+
         map.on("viewreset", function() {
           update();
         });
         map.on("move", update);
 
-        // render our initial visualization
         update();
+
+
       };
+      var myStyle = {
+    
+    "color": "red",
+    "weight": 1,
+    "opacity": 1.0336,
+    "width": 5
+};
+// var route = {"type":"FeatureCollection","features":[{"type":"Feature","properties":{},"geometry":{"type":"LineString","coordinates":[[-122.386794090271,37.60012220289819],[-122.40074157714844,37.61416342563735],[-122.40829467773436,37.62480307085124],[-122.41767168045044,37.640215957670726],[-122.42168426513672,37.64611177340781],[-122.42683410644533,37.6518202441499],[-122.43548154830931,37.656610943427125],[-122.44019150733948,37.66179202556475],[-122.44824886322021,37.66721054100796],[-122.44992256164551,37.669435584815766],[-122.452712059021,37.67363071495582],[-122.45807647705078,37.67736706842431],[-122.46163845062254,37.68140891166475],[-122.46814012527466,37.68623166333117],[-122.46987819671631,37.68967871970675],[-122.46994256973268,37.694755619331595],[-122.47101545333861,37.697879692484264],[-122.4709939956665,37.702786259018616],[-122.47097253799438,37.70377092874501],[-122.46620893478394,37.7094240379944],[-122.46481418609618,37.710052134627205],[-122.46367692947388,37.710120036647],[-122.45676755905153,37.71025584049998],[-122.45445013046265,37.71105368311011],[-122.44960069656372,37.71512763910703],[-122.44837760925292,37.71711361144011],[-122.44803428649902,37.71909953053827],[-122.44672536849974,37.724904219581596],[-122.44451522827147,37.72739907772295],[-122.44013786315918,37.72969019994345],[-122.42346525192261,37.740177543351415],[-122.41812229156493,37.748559561800654],[-122.42035388946533,37.77220734485087],[-122.41986036300658,37.774615805204256],[-122.39481925964355,37.79448684840749],[-122.37595796585083,37.80274827178258],[-122.3573112487793,37.80624076600696],[-122.33799934387206,37.80946185212675],[-122.3299741744995,37.8099026214036],[-122.30667114257812,37.807868279712665],[-122.29967594146727,37.8063933469406],[-122.29759454727174,37.8058677890642],[-122.28974103927614,37.80278218028747],[-122.28351831436157,37.801256282156544],[-122.2779607772827,37.798662182986924],[-122.2762441635132,37.79850958608104],[-122.27429151535034,37.79906910652822],[-122.26761817932127,37.81005519477107],[-122.26877689361571,37.81168262440736],[-122.27053642272949,37.81334392182851],[-122.270987033844,37.81566628515953],[-122.26613759994507,37.83432729676272],[-122.26912021636963,37.83819111265065],[-122.27150201797485,37.84856140722196],[-122.26706027984619,37.86043800837439],[-122.26846575736998,37.87224494293345],[-122.26901292800903,37.873049507350586],[-122.26966738700865,37.87358305575012],[-122.27127671241759,37.87377784229819],[-122.27961301803587,37.87272768263811],[-122.2812008857727,37.8731087906969],[-122.28537440299986,37.874768705025524],[-122.28711247444151,37.875903522887256],[-122.29626417160036,37.899019513198624],[-122.29917168617249,37.90291380078861],[-122.30101704597472,37.90522487837832],[-122.3044502735138,37.90945743301735],[-122.31707811355591,37.92540351171852],[-122.32012510299683,37.92910176319838],[-122.32216358184813,37.93046423001139],[-122.32452392578125,37.93112429802159],[-122.32995271682739,37.931352781721266],[-122.33520984649657,37.93136970641152],[-122.34608888626097,37.931522028448406],[-122.34842777252196,37.93245287848293],[-122.35379219055174,37.936971564791975]]}}]}
+// L.geoJson(route).addTo(map);
       
       scope.$watch('stationList', function() {
         if(scope.stationList !== undefined){
@@ -264,3 +243,6 @@ angular.module('app.bartInfo', [])
     }
   }
 }]);
+
+
+
