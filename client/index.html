@@ -6,24 +6,23 @@
     <link href="styles/style.css" rel="stylesheet" type="text/css">
     <link href="https://api.tiles.mapbox.com/mapbox.js/v2.1.9/mapbox.css" rel="stylesheet"/>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    <link href="styles/bootstrap.min.css" rel="stylesheet">
-  <body>
+    <link href="styles/bootstrap.css" rel="stylesheet">
+  <body ng-controller="indexController">
    <!-- <div>
     <h1>Real Time Bart</h1>
     <span ng-click="getBartInfo()">Bart</span>
   </div> -->
-  <nav class="navbar navbar-default">
+  <nav class="navbar navbar-inverse">
     <div class="container-fluid">
       <div class="navbar-header">
-        <a class="navbar-brand" href="#">Bart Hub</a>
+        <a href="/#" class="navbar-brand">Bart Hub</a>
       </div>
-      <ul class="nav navbar-nav">
-        <li class="active"><a href="#">Home</a></li>
-      </ul>
+      <div class="navbar-header">
+        <span class="navbar-brand" ng-click="specialSchedules()">Special Schedules</span>
+      </div>
     </div>
   </nav>
   <div ng-view></div>
-  
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
   <script src="styles/bootstrap.min.js"></script>

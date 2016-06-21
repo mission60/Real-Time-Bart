@@ -9,17 +9,6 @@ angular.module('app.bartInfo', [])
     return routes;
   });
 
-  Bart.getSS()
-  .then(function(specialSched) {
-    specialSched.forEach(function(item) {
-      if(typeof item.start_time !== 'string') {
-        delete item.start_time;
-        delete item.end_time;
-      }
-    });    
-    $scope.specialSched = specialSched;
-  });
-
   Bart.getSL()
   .then(function(stationList) {
     $scope.stationList = stationList;
@@ -70,19 +59,29 @@ angular.module('app.bartInfo', [])
         function getEtd(info) {
           var result = [];
           if(!Array.isArray(info.etd)) {
-            result.push({
+            if(Array.isArray(info.etd.estimate)){
+              result.push({
+                name: info.name,
+                destination: info.etd.destination,
+                color: info.etd.estimate.map(function(item) {
+                  return item.color;
+                }),
+                len: info.etd.estimate.map(function(item) {
+                  return item.length;
+                }),
+                times: info.etd.estimate.map(function(item) {
+                  return item.minutes;
+                })
+              });
+            } else {
+              result.push({
               name: info.name,
               destination: info.etd.destination,
-              color: info.etd.estimate.map(function(item) {
-                return item.color;
-              }),
-              len: info.etd.estimate.map(function(item) {
-                return item.length;
-              }),
-              times: info.etd.estimate.map(function(item) {
-                return item.minutes;
-              })
-            });
+              color: info.etd.estimate.color,
+              len: info.etd.estimate.length,
+              times: info.etd.estimate.minutes
+              });
+            }
           } else {
             info.etd.reduce(function(accum, item) {
               var len, color, minutes;
@@ -158,30 +157,30 @@ angular.module('app.bartInfo', [])
           }          
         });
 
-        function findTrains(station){
-          var arr = [];
-          route1.forEach(function(item) {
-            arr.push(scope.Bart.getRTE(station.abbr));
-          });
-          Promise.all(arr).then(function(routeData) {
-            console.log(routeData);
-            var filteredData = [];
-            routeData.forEach(function(item) {
-              filteredData.push(getEtd(item));
-            });
-            for(var i = 0; i < filteredData.length; i++) {
-              if(filteredData[i].length > 1) {
-                for(var j = 0; j < filteredData[i].length; j++) {
-                  if(filteredData[i][j].name === station.name) {
-                    if(filteredData[i][j].destination === 'SFO/Millbrae') {
+        // function findTrains(station){
+        //   var arr = [];
+        //   route1.forEach(function(item) {
+        //     arr.push(scope.Bart.getRTE(station.abbr));
+        //   });
+        //   Promise.all(arr).then(function(routeData) {
+        //     console.log(routeData);
+        //     var filteredData = [];
+        //     routeData.forEach(function(item) {
+        //       filteredData.push(getEtd(item));
+        //     });
+        //     for(var i = 0; i < filteredData.length; i++) {
+        //       if(filteredData[i].length > 1) {
+        //         for(var j = 0; j < filteredData[i].length; j++) {
+        //           if(filteredData[i][j].name === station.name) {
+        //             if(filteredData[i][j].destination === 'SFO/Millbrae') {
 
-                    }
-                  }
-                }
-              }
-            }
-          });
-        }
+        //             }
+        //           }
+        //         }
+        //       }
+        //     }
+        //   });
+        // }
 
         function getDestAndTime(data) {
           var str = '';

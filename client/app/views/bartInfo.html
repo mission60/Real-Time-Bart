@@ -1,12 +1,3 @@
-<span>Special Schedule</span>
-<div ng-repeat="data in specialSched">
-  <span>start date: {{data.start_date}} end date: {{data.end_date}}</span>
-  <span ng-if="data.start_time">start time: {{data.start_time}} end time: {{data.end_time}}</span><br/>
-  <span>{{data.text}}</span>
-  <a href="{{data.link}}">read more</a><br/>
-  <span>Routes to be affected: {{data.routes_affected}}</span><br/>
-  <p></p>
-</div>
 <div id="map" style="position: absolute; height: 700px; width: 1000px;">
   <d3-stations data="stationList"></d3-stations>
 </div>
