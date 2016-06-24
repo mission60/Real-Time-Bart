@@ -15,6 +15,10 @@ angular.module('app', [
   .when('/specialSchedules', {
     templateUrl: 'app/views/indexView.html',
     controller: 'indexController' 
+  })
+  .when('/about', {
+    templateUrl: 'app/views/about.html',
+    controller: 'indexController'
   });
 
   $locationProvider.html5Mode({

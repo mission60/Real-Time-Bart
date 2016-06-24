@@ -18,4 +18,8 @@ angular.module('app.index', [])
     });    
     $scope.specialSched = specialSched;
   });
+
+  $scope.about = function() {
+    $location.path('/about');
+  }
 }]);

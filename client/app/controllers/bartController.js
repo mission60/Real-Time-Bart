@@ -28,13 +28,9 @@ angular.module('app.bartInfo', [])
     link: function(scope, element) {
       L.mapbox.accessToken = 'pk.eyJ1Ijoic3RlbmluamEiLCJhIjoiSjg5eTMtcyJ9.g_O2emQF6X9RV69ibEsaIw';
       var map = L.mapbox.map('map', 'mapbox.pencil').setView([37.80467476, -122.2005822], 11);
-      // var width = 900;
-      // var height = 700;
       var canvas = d3.select(map.getPanes().overlayPane).append('svg');
                     
       var g = canvas.append('g').attr('class', 'leaflet-zoom-hide');
-      // var projection = d3.geo.mercator();
-      // projection.scale(80000).translate([100, 300]).center([-122.413756, 37.779528]);
       
       scope.render = function(data) {
         // canvas.selectAll('*').remove();
@@ -56,15 +52,33 @@ angular.module('app.bartInfo', [])
           return point;
         }
 
+        function stationTimeSheet(mappedData) {
+          var routeInfo = {};
+          mappedData.reduce(function(accum, item) {
+            for(var i = 0; i < item.length; i++) {
+              if(!accum[item[i].abbr]) {
+                accum[item[i].abbr] = {};
+                accum[item[i].abbr][item[i].dest_abbr] = item[i].times;
+              } else {
+                accum[item[i].abbr][item[i].dest_abbr] = item[i].times;
+              }
+            }
+            return accum;
+          }, routeInfo);
+          return routeInfo;
+        }
+
         function getEtd(info) {
           var result = [];
           if(!Array.isArray(info.etd)) {
             if(Array.isArray(info.etd.estimate)){
               result.push({
+                abbr: info.abbr,
                 name: info.name,
                 destination: info.etd.destination,
+                dest_abbr: info.etd.abbreviation,
                 color: info.etd.estimate.map(function(item) {
-                  return item.color;
+                  return item.hexcolor;
                 }),
                 len: info.etd.estimate.map(function(item) {
                   return item.length;
@@ -75,9 +89,11 @@ angular.module('app.bartInfo', [])
               });
             } else {
               result.push({
+              abbr: info.abbr,
               name: info.name,
               destination: info.etd.destination,
-              color: info.etd.estimate.color,
+              dest_abbr: info.etd.abbreviation,
+              color: info.etd.estimate.hexcolor,
               len: info.etd.estimate.length,
               times: info.etd.estimate.minutes
               });
@@ -90,20 +106,22 @@ angular.module('app.bartInfo', [])
                   return item.length;
                 });
                 color = item.estimate.map(function(item) {
-                  return item.color;
+                  return item.hexcolor;
                 });
                 minutes = item.estimate.map(function(item) {
                   return item.minutes;
                 });
               } else {
                 len = item.estimate.length;
-                color = item.estimate.color;
+                color = item.estimate.hexcolor;
                 minutes = item.estimate.minutes;
               }
 
               accum.push({
+                abbr: info.abbr,
                 name: info.name,
                 destination: item.destination,
+                dest_abbr: item.abbreviation,
                 color: color,
                 len: len,
                 times: minutes
@@ -111,84 +129,134 @@ angular.module('app.bartInfo', [])
               return accum;
             }, result);
           }
-          // console.log("RESULT:", result);
           return result;
         }
+        var route = {route1 : ['PITT', 'NCON', 'CONC', 'PHIL', 'WCRK', 'LAFY', 'ORIN', 'ROCK', 'MCAR', '19TH', '12TH','WOAK', 'EMBR', 
+                    'MONT', 'POWL', 'CIVC', '16TH', '24TH', 'GLEN', 'BALB', 'DALY', 'COLM', 'SSAN', 'SBRN', 'SFIA', 'MLBR'], route1Color : '#ffff33',
+                route2 : ['MLBR', 'SFIA', 'SBRN', 'SSAN', 'COLM', 'DALY', 'BALB', 'GLEN', '24TH', '16TH', 'CIVC', 
+                'POWL', 'MONT', 'EMBR', 'WOAK', '12TH', '19TH', 'MCAR', 'ROCK', 'ORIN', 'LAFY', 'WCRK', 'PHIL', 'CONC', 'NCON', 'PITT'], route2Color : '#ffff33',
+                route3 : ['FRMT', 'UCTY', 'SHAY', 'HAYW', 'BAYF', 'SANL', 'COLS', 'FTVL', 'LAKE', '12TH', '19TH', 'MCAR', 'ASHB', 'DBRK',
+                'NBRK', 'PLZA', 'DELN', 'RICH'], route3Color : '#ff9933',
+                route4 : ['RICH', 'DELN', 'PLZA', 'NBRK', 'DBRK', 'ASHB', 'MCAR', '19TH', '12TH', 'LAKE', 'FTVL', 'COLS', 'SANL', 'BAYF',
+                'HAYW', 'SHAY', 'UCTY', 'FRMT'], route4Color : '#ff9933',
+                route5 : ['FRMT', 'UCTY', 'SHAY', 'HAYW', 'BAYF', 'SANL', 'COLS', 'FTVL', 'LAKE', 'WOAK', 'EMBR', 'MONT', 'POWL', 'CIVC',
+                '16TH', '24TH', 'GLEN', 'BALB', 'DALY'], route5Color : '#339933',
+                route6 : ['DALY', 'BALB', 'GLEN', '24TH', '16TH', 'CIVC', 'POWL', 'MONT', 'EMBR', 'WOAK', 'LAKE', 'FTVL', 'COLS', 'SANL',
+                'BAYF', 'HAYW', 'SHAY', 'UCTY', 'FRMT'], route6Color : '#339933',
+                route7 : ['RICH', 'DELN', 'PLZA', 'NBRK', 'DBRK', 'ASHB', 'MCAR', '19TH', '12TH', 'WOAK', 'EMBR', 'MONT', 'POWL', 'CIVC',
+                '16TH', '24TH', 'GLEN', 'BALB', 'DALY', 'COLM', 'SSAN', 'SBRN', 'MLBR'], route7Color : '#ff0000',
+                route8 : ['MLBR', 'SBRN', 'SSAN', 'COLM', 'DALY', 'BALB', 'GLEN', '24TH', '16TH', 'CIVC', 'POWL', 'MONT', 'EMBR', 'WOAK',
+                '12TH', '19TH', 'MCAR', 'ASHB', 'DBRK', 'NBRK', 'PLZA', 'DELN', 'RICH'], route8Color : '#ff0000',
+                route11 : ['DUBL', 'WDUB', 'CAST', 'BAYF', 'SANL', 'COLS', 'FTVL', 'LAKE', 'WOAK', 'EMBR', 'MONT', 'POWL', 'CIVC', '16TH',
+                '24TH', 'GLEN', 'BALB', 'DALY'], route11Color : '#0099cc',
+                route12 : ['DALY', 'BALB', 'GLEN', '24TH', '16TH', 'CIVC', 'POWL', 'MONT', 'EMBR', 'WOAK', 'LAKE', 'FTVL', 'COLS', 'SANL',
+                'BAYF', 'CAST', 'WDUB', 'DUBL'], route12Color : '#0099cc'};
 
-        var route1 = ['PITT', 'NCON', 'CONC', 'PHIL', 'WCRK', 'LAFY', 'ORIN', 'ROCK', 'MCAR', '19TH', '12TH',
-        'WOAK', 'EMBR', 'MONT', 'POWL', 'CIVC', '16TH', '24TH', 'GLEN', 'BALB', 'DALY', 'COLM', 'SSAN', 'SBRN',
-        'SFIA', 'MLBR'];
-        
-        var arr = [];
-        route1.forEach(function(item) {
-          arr.push(scope.Bart.getRTE(item));
-        });
-
-        Promise.all(arr).then(function(routeData) {
-          var filteredData = [];
-          routeData.forEach(function(item) {
-            filteredData.push(getEtd(item));
+//Promise to get ALL real time estimation 
+        scope.Bart.getRTE('ALL')
+        .then(function(rteForAllStation) {
+          var etdForAllStation = [];
+          var timeSheetForAllStation;
+          rteForAllStation.forEach(function(item) {
+            etdForAllStation.push(getEtd(item));
           });
-          console.log('dddd', filteredData);
-          for(var i = 0; i < filteredData.length; i++) {
-            if(filteredData[i].length > 1) {
-              for(var j = 0; j < filteredData[i].length; j++) {
-                for(var k = 0; k < filteredData[i][j].times.length; k++) {
-                  if(filteredData[i][j].times[k] === 'Leaving') {
-                    if(filteredData[i][j].destination === 'SFO/Millbrae') {
-                      console.log('success', 'Train is leaving from ' + filteredData[i][j].name + ' to ' + filteredData[i+1][j].name)
-                    } else if (filteredData[i][j].destination === 'Pittsburg/Bay Point') {
-                      console.log('reverse success', 'Train is leaving from ' + filteredData[i][j].name + ' to ' + filteredData[i-1][j].name)
+          timeSheetForAllStation = stationTimeSheet(etdForAllStation);
+
+          function findClosestTrainBtwTwo(station, dest) {
+            var possibleRoute = [];
+            for(var rte in route) {
+              var stationIdx = route[rte].indexOf(station);
+              var destIdx = route[rte].indexOf(dest);
+              if(stationIdx > -1 && destIdx > -1) {
+                if(stationIdx < destIdx) {
+                  possibleRoute.push([rte, route[rte+'Color']]);
+                }
+              }
+            }
+            console.log('possibleRoute', possibleRoute); 
+            var nextTrainMins = Number.POSITIVE_INFINITY;
+            var nextTrainDest;
+            var routeNum;
+            for(var i = 0; i < possibleRoute.length; i++) {
+              var routeName = possibleRoute[i][0]; //route number...
+              var routeColor = possibleRoute[i][1]; //route hex color...
+              // console.log('routeColor', routeColor);
+              var singleRoute = route[routeName]; // ['abbr', 'abbr', 'abbr', 'abbr'.....]
+              var finalDest = singleRoute[singleRoute.length-1];
+              console.log('finaL!',finalDest)
+              for(var j = 0; j < etdForAllStation.length; j++) {
+                var eachStation = etdForAllStation[j];
+                for(var k = 0; k < eachStation.length; k++) {
+                  var destIdxInRoute = singleRoute.indexOf(eachStation[k].dest_abbr);
+                  var endIdxInRoute = singleRoute.indexOf(dest);
+                  if(destIdxInRoute >= endIdxInRoute && eachStation[k].abbr === station && eachStation[k].color[0] === routeColor) {
+                    if(+eachStation[k].times[0] < nextTrainMins){
+                      nextTrainMins = eachStation[k].times[0];
+                      nextTrainDest = eachStation[k].dest_abbr;
+                      routeNum = routeName;
                     }
                   }
                 }
               }
-            } else {
-              for(var l = 0; l < filteredData[i][0].times.length; l++) {
-                if(filteredData[i][0].times[l] === 'Leaving') {
-                  if(filteredData[i][0].destination === 'SFO/Millbrae'){
-                    console.log('success2', 'Train is leaving from ' + filteredData[i][0].name + ' to ' + filteredData[i+1][0].name)
-                  } else if (filteredData[i][0].destination === 'Pittsburg/Bay Point') {
-                    console.log('reverse success2', 'Train is leaving from ' + filteredData[i][0].name + ' to ' + filteredData[i-1][0].name)
-                  }
+            }
+            console.log('nextTrainMin', nextTrainMins, 'nextTrainRouteName', nextTrainDest, 'route', routeNum);
+            var routeTimeSheet = {};
+            route[routeNum].reduce(function(accum, item) {
+              for(var station in timeSheetForAllStation) {
+                if(item === station) {
+                  accum[station] = timeSheetForAllStation[station];
                 }
               }
-            } 
-          }          
+              return accum;
+            }, routeTimeSheet);
+            findClosestTrain(routeTimeSheet, station, nextTrainDest);
+          }
+          findClosestTrainBtwTwo('MONT', 'WOAK');
+          // with the route and current station, trace back the location of the train.
+          
         });
+//end of promise
 
-        // function findTrains(station){
-        //   var arr = [];
-        //   route1.forEach(function(item) {
-        //     arr.push(scope.Bart.getRTE(station.abbr));
-        //   });
-        //   Promise.all(arr).then(function(routeData) {
-        //     console.log(routeData);
-        //     var filteredData = [];
-        //     routeData.forEach(function(item) {
-        //       filteredData.push(getEtd(item));
-        //     });
-        //     for(var i = 0; i < filteredData.length; i++) {
-        //       if(filteredData[i].length > 1) {
-        //         for(var j = 0; j < filteredData[i].length; j++) {
-        //           if(filteredData[i][j].name === station.name) {
-        //             if(filteredData[i][j].destination === 'SFO/Millbrae') {
-
-        //             }
-        //           }
-        //         }
-        //       }
-        //     }
-        //   });
-        // }
+        function findClosestTrain(routeInfo, station, dest) {
+          var rte = route.route2; //use if/else statement to pick route based on dest
+          var stationIdx = rte.indexOf(station);
+          console.log('stationIdx', stationIdx);
+          if(stationIdx === -1) {
+            console.error('error');
+          }
+          var bestStationIdx = stationIdx;
+          var arrivalInfo = routeInfo[station][dest];
+          var nextTrainArrival = (arrivalInfo[0] === 'Leaving') ? 0 : arrivalInfo[0];
+          if(nextTrainArrival < 1) {
+            nextTrainArrival = arrivalInfo[1];
+          }
+          console.log('nextTrainArrival', nextTrainArrival);
+          for(var i = stationIdx-1; i >= 0; i--) {
+            console.log('inside for loop time', routeInfo[rte[i]][dest][0])
+            if(+routeInfo[rte[i]][dest][0] > +nextTrainArrival || routeInfo[rte[i]][dest][0] === 'Leaving') {
+              bestStationIdx = i;
+              nextTrainArrival = (routeInfo[rte[i]][dest][0] === 'Leaving') ? 0 : routeInfo[rte[i]][dest][0];
+              break;
+            }
+          }
+          var ans = {trainLocation: 'between ' + rte[bestStationIdx] + ' and ' + rte[bestStationIdx+1],
+                    time: (routeInfo[rte[bestStationIdx+1]][dest][0]) + ' min away to ' + rte[bestStationIdx+1]};
+          console.log('ans', ans);
+          return ans;
+        }
 
         function getDestAndTime(data) {
           var str = '';
+          var time = 0;
           for(var i = 0; i < data.length; i++) {
+            if(data[i].times[0] === 'Leaving') {
+              data[i].times[0] = time;
+            }
             str += 'Train to ' + data[i].destination + ' in '+ data[i].times + ' min.' + '(' + data[i].len + ' cars' + ')' + '<br/>'
           }
           return str;
         }
+
         var tip = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);                        
         var station = g.selectAll('circle')
                         .data(data.station)
