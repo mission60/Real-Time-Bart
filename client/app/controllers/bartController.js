@@ -189,6 +189,9 @@ angular.module('app.bartInfo', [])
                 for(var k = 0; k < eachStation.length; k++) {
                   var destIdxInRoute = singleRoute.indexOf(eachStation[k].dest_abbr);
                   var endIdxInRoute = singleRoute.indexOf(dest);
+                  if(eachStation[k].times[0] === 'Leaving') {
+                    eachStation[k].times[0] = 0;
+                  }
                   if(destIdxInRoute >= endIdxInRoute && eachStation[k].abbr === station && eachStation[k].color[0] === routeColor) {
                     if(+eachStation[k].times[0] < nextTrainMins){
                       nextTrainMins = eachStation[k].times[0];
@@ -209,41 +212,41 @@ angular.module('app.bartInfo', [])
               }
               return accum;
             }, routeTimeSheet);
+            function findClosestTrain(routeInfo, station, dest) {
+              var rte = route[routeNum]; //use if/else statement to pick route based on dest
+              var stationIdx = rte.indexOf(station);
+              console.log('stationIdx', stationIdx);
+              if(stationIdx === -1) {
+                console.error('error');
+              }
+              var bestStationIdx = stationIdx;
+              var arrivalInfo = routeInfo[station][dest];
+              var nextTrainArrival = (arrivalInfo[0] === 'Leaving') ? 0 : arrivalInfo[0];
+              if(nextTrainArrival < 1) {
+                nextTrainArrival = arrivalInfo[1];
+              }
+              console.log('nextTrainArrival', nextTrainArrival);
+              for(var i = stationIdx-1; i >= 0; i--) {
+                console.log('inside for loop time', routeInfo[rte[i]][dest][0])
+                if(+routeInfo[rte[i]][dest][0] > +nextTrainArrival || routeInfo[rte[i]][dest][0] === 'Leaving') {
+                  bestStationIdx = i;
+                  nextTrainArrival = (routeInfo[rte[i]][dest][0] === 'Leaving') ? 0 : routeInfo[rte[i]][dest][0];
+                  break;
+                }
+              }
+              var ans = {trainLocation: 'between ' + rte[bestStationIdx] + ' and ' + rte[bestStationIdx+1],
+                        time: (routeInfo[rte[bestStationIdx+1]][dest][0]) + ' min away to ' + rte[bestStationIdx+1]};
+              console.log('ans', ans);
+              return ans;
+            }
             findClosestTrain(routeTimeSheet, station, nextTrainDest);
           }
-          findClosestTrainBtwTwo('MONT', 'WOAK');
+          findClosestTrainBtwTwo('MONT', 'SFIA');
           // with the route and current station, trace back the location of the train.
-          
         });
 //end of promise
 
-        function findClosestTrain(routeInfo, station, dest) {
-          var rte = route.route2; //use if/else statement to pick route based on dest
-          var stationIdx = rte.indexOf(station);
-          console.log('stationIdx', stationIdx);
-          if(stationIdx === -1) {
-            console.error('error');
-          }
-          var bestStationIdx = stationIdx;
-          var arrivalInfo = routeInfo[station][dest];
-          var nextTrainArrival = (arrivalInfo[0] === 'Leaving') ? 0 : arrivalInfo[0];
-          if(nextTrainArrival < 1) {
-            nextTrainArrival = arrivalInfo[1];
-          }
-          console.log('nextTrainArrival', nextTrainArrival);
-          for(var i = stationIdx-1; i >= 0; i--) {
-            console.log('inside for loop time', routeInfo[rte[i]][dest][0])
-            if(+routeInfo[rte[i]][dest][0] > +nextTrainArrival || routeInfo[rte[i]][dest][0] === 'Leaving') {
-              bestStationIdx = i;
-              nextTrainArrival = (routeInfo[rte[i]][dest][0] === 'Leaving') ? 0 : routeInfo[rte[i]][dest][0];
-              break;
-            }
-          }
-          var ans = {trainLocation: 'between ' + rte[bestStationIdx] + ' and ' + rte[bestStationIdx+1],
-                    time: (routeInfo[rte[bestStationIdx+1]][dest][0]) + ' min away to ' + rte[bestStationIdx+1]};
-          console.log('ans', ans);
-          return ans;
-        }
+        
 
         function getDestAndTime(data) {
           var str = '';
