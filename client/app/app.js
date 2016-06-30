@@ -1,5 +1,4 @@
 'use strict';
-
 angular.module('app', [
   'app.service',
   'app.bartInfo',
@@ -19,6 +18,9 @@ angular.module('app', [
   .when('/about', {
     templateUrl: 'app/views/about.html',
     controller: 'indexController'
+  })
+  .otherwise({
+    redirectTo: '/'
   });
 
   $locationProvider.html5Mode({

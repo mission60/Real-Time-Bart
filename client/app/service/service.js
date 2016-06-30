@@ -1,15 +1,15 @@
 'use strict';
 angular.module('app.service', [])
 .factory('Bart', function($http) {
-  var getRoute = function() {
-    return $http({
-      method: 'GET',
-      url: '/api/routes'
-    })
-    .then(function(resp) {
-      return resp.data.root.routes.route;
-    });
-  };
+  // var getRoute = function() {
+  //   return $http({
+  //     method: 'GET',
+  //     url: '/api/routes'
+  //   })
+  //   .then(function(resp) {
+  //     return resp.data.root.routes.route;
+  //   });
+  // };
 
   var getSS = function() {
     return $http({
@@ -45,7 +45,7 @@ angular.module('app.service', [])
   return {
     getSS: getSS,
     getSL: getSL,
-    getRTE: getRTE,
-    getRoute: getRoute
+    getRTE: getRTE
+    // getRoute: getRoute
   };
 });
