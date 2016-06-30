@@ -1,0 +1,24 @@
+div.departure {
+  position: absolute;
+  z-index: 1;
+  left: 40px;
+}
+
+div.destination {
+  position: relative;
+  left: 40px;
+  top: 40px;
+  z-index: 1;
+}
+
+div.tooltip {
+  position: absolute;
+  width: 350px;                  
+  height: relative;                 
+  padding: 2px;             
+  font: 12px sans-serif;        
+  background: lightsteelblue;   
+  border: 0px;      
+  border-radius: 8px;           
+  pointer-events: none;         
+}
