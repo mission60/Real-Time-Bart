@@ -1,13 +1,9 @@
 'use strict';
 angular.module('app.bartInfo', [])
-.controller('bartController', ['$scope', 'Bart', function($scope, Bart) {
+.controller('bartController', ['$scope', 'Bart', function($scope, Bart, $rootScope) {
   $scope.Bart = Bart;
-  Bart.getRoute()
-  .then(function(routes) {
-    // console.log('routes', routes);
-    // $scope.routes = routes;
-    return routes;
-  });
+  // $scope.departure = departure;
+  // $scope.destination = destination;
 
   Bart.getSL()
   .then(function(stationList) {
@@ -17,9 +13,14 @@ angular.module('app.bartInfo', [])
 
   Bart.getRTE()
   .then(function(getTrainTime){
-    // $scope.getTrainTime = getTrainTime;
     return getTrainTime;
   });
+
+  // $scope.getStartNDest = function() {
+  //   var stations = [];
+  //   stations.push($scope.departure, $scope.destination);
+  //   return stations;
+  // };
 }])
 .directive('d3Stations', [function() {
   return {
@@ -27,111 +28,12 @@ angular.module('app.bartInfo', [])
     scope: false,
     link: function(scope, element) {
       L.mapbox.accessToken = 'pk.eyJ1Ijoic3RlbmluamEiLCJhIjoiSjg5eTMtcyJ9.g_O2emQF6X9RV69ibEsaIw';
-      var map = L.mapbox.map('map', 'mapbox.pencil').setView([37.80467476, -122.2005822], 11);
+      var map = L.mapbox.map('map', 'mapbox.streets').setView([37.80467476, -122.2005822], 11);
       var canvas = d3.select(map.getPanes().overlayPane).append('svg');
-                    
       var g = canvas.append('g').attr('class', 'leaflet-zoom-hide');
-      
-      scope.render = function(data) {
-        // canvas.selectAll('*').remove();
-        if(data === undefined) {
-          return;
-        }
-        // var dataArr = [];
-        // console.log('data', data.station)
-        data.station.forEach(function(d) {
-          // dataArr.push(new L.LatLng(d.gtfs_latitude, d.gtfs_longitude));
-          d.lat = d.gtfs_latitude;
-          d.lng = d.gtfs_longitude;
-          delete d.gtfs_latitude;
-          delete d.gtfs_longitude;
-        });
+      var tip = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);      
 
-        function project(latlng) {
-          var point = map.latLngToLayerPoint(L.latLng(latlng));
-          return point;
-        }
-
-        function stationTimeSheet(mappedData) {
-          var routeInfo = {};
-          mappedData.reduce(function(accum, item) {
-            for(var i = 0; i < item.length; i++) {
-              if(!accum[item[i].abbr]) {
-                accum[item[i].abbr] = {};
-                accum[item[i].abbr][item[i].dest_abbr] = item[i].times;
-              } else {
-                accum[item[i].abbr][item[i].dest_abbr] = item[i].times;
-              }
-            }
-            return accum;
-          }, routeInfo);
-          return routeInfo;
-        }
-
-        function getEtd(info) {
-          var result = [];
-          if(!Array.isArray(info.etd)) {
-            if(Array.isArray(info.etd.estimate)){
-              result.push({
-                abbr: info.abbr,
-                name: info.name,
-                destination: info.etd.destination,
-                dest_abbr: info.etd.abbreviation,
-                color: info.etd.estimate.map(function(item) {
-                  return item.hexcolor;
-                }),
-                len: info.etd.estimate.map(function(item) {
-                  return item.length;
-                }),
-                times: info.etd.estimate.map(function(item) {
-                  return item.minutes;
-                })
-              });
-            } else {
-              result.push({
-              abbr: info.abbr,
-              name: info.name,
-              destination: info.etd.destination,
-              dest_abbr: info.etd.abbreviation,
-              color: info.etd.estimate.hexcolor,
-              len: info.etd.estimate.length,
-              times: info.etd.estimate.minutes
-              });
-            }
-          } else {
-            info.etd.reduce(function(accum, item) {
-              var len, color, minutes;
-              if(Array.isArray(item.estimate)) {
-                len = item.estimate.map(function(item) {
-                  return item.length;
-                });
-                color = item.estimate.map(function(item) {
-                  return item.hexcolor;
-                });
-                minutes = item.estimate.map(function(item) {
-                  return item.minutes;
-                });
-              } else {
-                len = item.estimate.length;
-                color = item.estimate.hexcolor;
-                minutes = item.estimate.minutes;
-              }
-
-              accum.push({
-                abbr: info.abbr,
-                name: info.name,
-                destination: item.destination,
-                dest_abbr: item.abbreviation,
-                color: color,
-                len: len,
-                times: minutes
-              });
-              return accum;
-            }, result);
-          }
-          return result;
-        }
-        var route = {route1 : ['PITT', 'NCON', 'CONC', 'PHIL', 'WCRK', 'LAFY', 'ORIN', 'ROCK', 'MCAR', '19TH', '12TH','WOAK', 'EMBR', 
+      var route = {route1 : ['PITT', 'NCON', 'CONC', 'PHIL', 'WCRK', 'LAFY', 'ORIN', 'ROCK', 'MCAR', '19TH', '12TH','WOAK', 'EMBR', 
                     'MONT', 'POWL', 'CIVC', '16TH', '24TH', 'GLEN', 'BALB', 'DALY', 'COLM', 'SSAN', 'SBRN', 'SFIA', 'MLBR'], route1Color : '#ffff33',
                 route2 : ['MLBR', 'SFIA', 'SBRN', 'SSAN', 'COLM', 'DALY', 'BALB', 'GLEN', '24TH', '16TH', 'CIVC', 
                 'POWL', 'MONT', 'EMBR', 'WOAK', '12TH', '19TH', 'MCAR', 'ROCK', 'ORIN', 'LAFY', 'WCRK', 'PHIL', 'CONC', 'NCON', 'PITT'], route2Color : '#ffff33',
@@ -152,7 +54,197 @@ angular.module('app.bartInfo', [])
                 route12 : ['DALY', 'BALB', 'GLEN', '24TH', '16TH', 'CIVC', 'POWL', 'MONT', 'EMBR', 'WOAK', 'LAKE', 'FTVL', 'COLS', 'SANL',
                 'BAYF', 'CAST', 'WDUB', 'DUBL'], route12Color : '#0099cc'};
 
-//Promise to get ALL real time estimation 
+      function getEtd(info) {
+        var result = [];
+        if(!Array.isArray(info.etd)) {
+          if(Array.isArray(info.etd.estimate)){
+            result.push({
+              abbr: info.abbr,
+              name: info.name,
+              destination: info.etd.destination,
+              dest_abbr: info.etd.abbreviation,
+              color: info.etd.estimate.map(function(item) {
+                return item.hexcolor;
+              }),
+              len: info.etd.estimate.map(function(item) {
+                return item.length;
+              }),
+              times: info.etd.estimate.map(function(item) {
+                return item.minutes;
+              })
+            });
+          } else {
+            result.push({
+            abbr: info.abbr,
+            name: info.name,
+            destination: info.etd.destination,
+            dest_abbr: info.etd.abbreviation,
+            color: info.etd.estimate.hexcolor,
+            len: info.etd.estimate.length,
+            times: info.etd.estimate.minutes
+            });
+          }
+        } else {
+          info.etd.reduce(function(accum, item) {
+            var len, color, minutes;
+            if(Array.isArray(item.estimate)) {
+              len = item.estimate.map(function(item) {
+                return item.length;
+              });
+              color = item.estimate.map(function(item) {
+                return item.hexcolor;
+              });
+              minutes = item.estimate.map(function(item) {
+                return item.minutes;
+              });
+            } else {
+              len = item.estimate.length;
+              color = item.estimate.hexcolor;
+              minutes = item.estimate.minutes;
+            }
+
+            accum.push({
+              abbr: info.abbr,
+              name: info.name,
+              destination: item.destination,
+              dest_abbr: item.abbreviation,
+              color: color,
+              len: len,
+              times: minutes
+            });
+            return accum;
+          }, result);
+        }
+        return result;
+      }
+      function stationTimeSheet(mappedData) {
+        var routeInfo = {};
+        mappedData.reduce(function(accum, item) {
+          for(var i = 0; i < item.length; i++) {
+            if(!accum[item[i].abbr]) {
+              accum[item[i].abbr] = {};
+              accum[item[i].abbr][item[i].dest_abbr] = item[i].times;
+            } else {
+              accum[item[i].abbr][item[i].dest_abbr] = item[i].times;
+            }
+          }
+          return accum;
+        }, routeInfo);
+        return routeInfo;
+      }
+      function getDestAndTime(data) {
+        var str = '';
+        var time = 0;
+        for(var i = 0; i < data.length; i++) {
+          if(data[i].times[0] === 'Leaving') {
+            data[i].times[0] = time;
+          }
+          str += 'Train to ' + data[i].destination + ' in '+ data[i].times + ' min.' + '(' + data[i].len + ' cars' + ')' + '<br/>'
+        }
+        return str;
+      }
+      function project(latlng) {
+        var point = map.latLngToLayerPoint(L.latLng(latlng));
+        return point;
+      } 
+      function plotTrain(point1, point2, percentage) {
+        var point = [point1, point2];
+        console.log('point', point);
+        var distance = Math.sqrt(Math.pow((point1.x-point2.x), 2) + Math.pow((point1.y-point2.y), 2));        
+        
+        var middle = [{lat: (point1.lat+point2.lat)*percentage, lng: (point1.lng+point2.lng)*percentage}];
+        console.log('middle', middle);
+        var dot = g.append('image')
+                  .attr("xlink:href", "../pics/bart.png")
+                  .attr('x', function(d) { return project({lat: d.lat, lng: d.lng}).x; })
+                  .attr('y', function(d) { return project({lat: d.lat, lng: d.lng}).y; })
+                  .attr({ width: 10, height: 10 });
+      }
+
+      scope.getEtd = getEtd;
+      var station;
+      scope.render = function(data) {
+        if(data === undefined) {
+          return;
+        }     
+        // canvas.selectAll('*').remove();
+
+        data.station.forEach(function(d) {
+          d.lat = d.gtfs_latitude;
+          d.lng = d.gtfs_longitude;
+          delete d.gtfs_latitude;
+          delete d.gtfs_longitude;
+        });     
+
+        station = g.selectAll('circle')
+                  .data(data.station)
+                  .enter().append('circle')
+                  .attr('r', '5px')
+                  .attr('stroke', 'grey')
+                  .attr('fill', 'black')
+                  .on('mouseover', function(data) {
+                    var page = d3.event;
+                    scope.Bart.getRTE(data.abbr)
+                    .then(function(info) {
+                      tip.transition()
+                          .duration(200)
+                          .style('opacity', 0.9);
+                      tip .html('Station: ' + info.name + '<br/>' + getDestAndTime(getEtd(info)) + '<br/>')
+                          .style('left', (page.pageX + 10) + 'px')   
+                          .style('top', (page.pageY - 50) + 'px'); 
+                    });
+                  })
+                  .on('mouseout', function(d) {
+                    tip.transition()
+                        .duration(200)
+                        .style('opacity', 0);
+                  });
+
+        var text = g.selectAll('text')
+                    .data(data.station)
+                    .enter().append('text')
+                    .attr('font-size', '8px')
+                    .text(function(d) { return d.abbr; })
+        
+        function update() {
+          // We need to reposition our SVG and our containing group when the map
+          // repositions via zoom or pan
+          // https://github.com/zetter/voronoi-maps/blob/master/lib/voronoi_map.js
+          var bounds = map.getBounds();
+          var topLeft = map.latLngToLayerPoint(bounds.getNorthWest())
+          var bottomRight = map.latLngToLayerPoint(bounds.getSouthEast())
+          canvas.style('width', map.getSize().x + 'px')
+                .style('height', map.getSize().y + 'px')
+                .style('left', topLeft.x + 'px')
+                .style('top', topLeft.y + 'px');
+          g.attr('transform', 'translate(' + -topLeft.x + ',' + -topLeft.y + ')');
+
+          // We reproject our data with the updated projection from leaflet
+          station.attr({
+            cx: function(d) { return project({lat: d.lat, lng: d.lng}).x; },
+            cy: function(d) { return project({lat: d.lat, lng: d.lng}).y; }
+          });
+          text.attr({
+            x: function(d) { return project({lat: d.lat, lng: d.lng}).x + 5; },
+            y: function(d) { return project({lat: d.lat, lng: d.lng}).y + 8; }
+          });
+        }
+        map.on('viewreset', function() {
+          update();
+        });
+        map.on('move', update);
+        // render our initial visualization
+        update();
+      };
+      
+      scope.$watch('stationList', function() {
+        if(scope.stationList !== undefined) {
+          scope.render(scope.stationList);
+        }
+      });
+
+      var station1, station2, time;
+      scope.getRTEfunction = function() {
         scope.Bart.getRTE('ALL')
         .then(function(rteForAllStation) {
           var etdForAllStation = [];
@@ -161,7 +253,7 @@ angular.module('app.bartInfo', [])
             etdForAllStation.push(getEtd(item));
           });
           timeSheetForAllStation = stationTimeSheet(etdForAllStation);
-
+  
           function findClosestTrainBtwTwo(station, dest) {
             var possibleRoute = [];
             for(var rte in route) {
@@ -180,10 +272,9 @@ angular.module('app.bartInfo', [])
             for(var i = 0; i < possibleRoute.length; i++) {
               var routeName = possibleRoute[i][0]; //route number...
               var routeColor = possibleRoute[i][1]; //route hex color...
-              // console.log('routeColor', routeColor);
               var singleRoute = route[routeName]; // ['abbr', 'abbr', 'abbr', 'abbr'.....]
-              var finalDest = singleRoute[singleRoute.length-1];
-              console.log('finaL!',finalDest)
+              var finalDest = singleRoute[singleRoute.length-1]; //to be removed....
+              console.log('finaL!',finalDest);
               for(var j = 0; j < etdForAllStation.length; j++) {
                 var eachStation = etdForAllStation[j];
                 for(var k = 0; k < eachStation.length; k++) {
@@ -212,125 +303,85 @@ angular.module('app.bartInfo', [])
               }
               return accum;
             }, routeTimeSheet);
+
             function findClosestTrain(routeInfo, station, dest) {
-              var rte = route[routeNum]; //use if/else statement to pick route based on dest
+              var rte = route[routeNum];
               var stationIdx = rte.indexOf(station);
-              console.log('stationIdx', stationIdx);
               if(stationIdx === -1) {
                 console.error('error');
               }
               var bestStationIdx = stationIdx;
               var arrivalInfo = routeInfo[station][dest];
               var nextTrainArrival = (arrivalInfo[0] === 'Leaving') ? 0 : arrivalInfo[0];
+              console.log('arrival info', arrivalInfo, nextTrainArrival);
               if(nextTrainArrival < 1) {
                 nextTrainArrival = arrivalInfo[1];
               }
               console.log('nextTrainArrival', nextTrainArrival);
               for(var i = stationIdx-1; i >= 0; i--) {
-                console.log('inside for loop time', routeInfo[rte[i]][dest][0])
-                if(+routeInfo[rte[i]][dest][0] > +nextTrainArrival || routeInfo[rte[i]][dest][0] === 'Leaving') {
+                // console.log('bug', routeInfo[rte[i]])
+                // console.log('inside for loop time', routeInfo[rte[i]][dest][0] || routeInfo[rte[i]][dest]);
+                if(+routeInfo[rte[i]][dest][0] > +nextTrainArrival || routeInfo[rte[i]][dest][0] === 0) {
                   bestStationIdx = i;
-                  nextTrainArrival = (routeInfo[rte[i]][dest][0] === 'Leaving') ? 0 : routeInfo[rte[i]][dest][0];
+                  nextTrainArrival = routeInfo[rte[i]][dest][0];
+                  console.log('nextTrainArrival', nextTrainArrival)
                   break;
                 }
               }
               var ans = {trainLocation: 'between ' + rte[bestStationIdx] + ' and ' + rte[bestStationIdx+1],
                         time: (routeInfo[rte[bestStationIdx+1]][dest][0]) + ' min away to ' + rte[bestStationIdx+1]};
-              console.log('ans', ans);
+              var timeForNextTrain = (arrivalInfo[0] === 0) ? arrivalInfo[1] : arrivalInfo[0];
+              station1 = rte[bestStationIdx];
+              station2 = rte[bestStationIdx+1];
+              time = routeInfo[rte[bestStationIdx+1]][dest][0];
+              alert('Next train is coming in ' + timeForNextTrain + ' min.\nTrain is in between ' + rte[bestStationIdx] + ' and ' + rte[bestStationIdx+1] + ' and is ' + (routeInfo[rte[bestStationIdx+1]][dest][0]) + ' min away to ' + rte[bestStationIdx+1]);
               return ans;
             }
             findClosestTrain(routeTimeSheet, station, nextTrainDest);
-          }
-          findClosestTrainBtwTwo('MONT', 'SFIA');
-          // with the route and current station, trace back the location of the train.
-        });
-//end of promise
-
-        
-
-        function getDestAndTime(data) {
-          var str = '';
-          var time = 0;
-          for(var i = 0; i < data.length; i++) {
-            if(data[i].times[0] === 'Leaving') {
-              data[i].times[0] = time;
-            }
-            str += 'Train to ' + data[i].destination + ' in '+ data[i].times + ' min.' + '(' + data[i].len + ' cars' + ')' + '<br/>'
-          }
-          return str;
-        }
-
-        var tip = d3.select('body').append('div').attr('class', 'tooltip').style('opacity', 0);                        
-        var station = g.selectAll('circle')
-                        .data(data.station)
-                        .enter().append('circle')
-                        .attr('r', '5px')
-                        .attr('fill', 'red')
-                        .on('mouseover', function(data) {
-                          console.log('data', data);
-                          var page = d3.event;
-                          scope.Bart.getRTE(data.abbr)
-                          .then(function(info) {
-                            console.log('info', info);
-                            tip.transition()
-                                .duration(200)
-                                .style('opacity', 0.9);
-                            tip .html('Station: ' + info.name + '<br/>' + getDestAndTime(getEtd(info)) + '<br/>')
-                                .style('left', (page.pageX + 10) + 'px')   
-                                .style('top', (page.pageY - 50) + 'px'); 
-                          });
-                        })
-                        .on('mouseout', function(d) {
-                          tip.transition()
+          }          
+          findClosestTrainBtwTwo(scope.departure, scope.destination);
+          scope.$watch('stationList', function(newValues) {
+            var depStation = scope.stationList.station.filter(function(item) {
+              return item.abbr === scope.departure;
+            });
+            var destStation = scope.stationList.station.filter(function(item) {
+              return item.abbr === scope.destination;
+            });
+            var station1Point = scope.stationList.station.reduce(function(accum, item) {
+              if(item.abbr === station1) {
+                accum.lat = +item.lat;
+                accum.lng = +item.lng;
+              }
+              return accum;
+            }, {});
+            var station2Point = scope.stationList.station.reduce(function(accum, item) {
+              if(item.abbr === station2) {
+                accum.lat = +item.lat;
+                accum.lng = +item.lng;
+              }
+              return accum;
+            }, {});
+            console.log('station1Point', station1Point);
+            var departing = station
+                            .filter(function(d) {
+                              return d.abbr === depStation[0].abbr;
+                            })
+                            .transition()
+                            .duration(500)
+                            .attr('r', '10px')
+                            .attr('fill', 'red'); 
+            var destination = station
+                              .filter(function(d) {
+                                return d.abbr === destStation[0].abbr;
+                              })     
+                              .transition()
                               .duration(500)
-                              .style('opacity', 0);
-                        });
-        var text = g.selectAll('text')
-                    .data(data.station)
-                    .enter().append('text')
-                    .attr('font-size', '8px')
-                    .text(function(d) { return d.abbr; })
-                    // .on('click', function(data) {
-
-                    // });
-        function update() {
-          // We need to reposition our SVG and our containing group when the map
-          // repositions via zoom or pan
-          // https://github.com/zetter/voronoi-maps/blob/master/lib/voronoi_map.js
-          var bounds = map.getBounds();
-          var topLeft = map.latLngToLayerPoint(bounds.getNorthWest())
-          var bottomRight = map.latLngToLayerPoint(bounds.getSouthEast())
-          canvas.style('width', map.getSize().x + 'px')
-                .style('height', map.getSize().y + 'px')
-                .style('left', topLeft.x + 'px')
-                .style('top', topLeft.y + 'px');
-          g.attr('transform', 'translate(' + -topLeft.x + ',' + -topLeft.y + ')');
-
-          // We reproject our data with the updated projection from leaflet
-          station.attr({
-            cx: function(d) { return project({lat: d.lat, lng: d.lng}).x },
-            cy: function(d) { return project({lat: d.lat, lng: d.lng}).y }
+                              .attr('r', '10px')
+                              .attr('fill', 'green');
+            plotTrain(station1Point, station2Point, 0.5);
           });
-          text.attr({
-            x: function(d) { return project({lat: d.lat, lng: d.lng}).x + 5 },
-            y: function(d) { return project({lat: d.lat, lng: d.lng}).y + 8 }
-          });
-        }
-        map.on("viewreset", function() {
-          update();
         });
-        map.on("move", update);
-
-        // render our initial visualization
-        update();
-
-      };
-      
-      scope.$watch('stationList', function() {
-        if(scope.stationList !== undefined) {
-          scope.render(scope.stationList);
-        }
-      });
+      } 
     }
   }
 }]);
