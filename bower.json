@@ -1,0 +1,17 @@
+{
+  "name": "real-time-bart",
+  "description": "Real time information for BART",
+  "main": "index.js",
+  "authors": [
+    "ckim16 <aero.cheewoon@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/ckim16/real-time-bart",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
