@@ -21,5 +21,14 @@ angular.module('app.index', [])
 
   $scope.about = function() {
     $location.path('/about');
-  }
+  };
+
+  Bart.getAdvisories()
+  .then(function(delay) {
+    if(delay === 'No delays reported.') {
+      $scope.delay = '';
+    } else {
+      $scope.delay = delay;
+    }
+  })
 }]);
