@@ -2,8 +2,6 @@
 angular.module('app.bartInfo', [])
 .controller('bartController', ['$scope', 'Bart', function($scope, Bart, $rootScope) {
   $scope.Bart = Bart;
-  // $scope.departure = departure;
-  // $scope.destination = destination;
 
   Bart.getSL()
   .then(function(stationList) {
@@ -266,9 +264,9 @@ angular.module('app.bartInfo', [])
             var nextTrainDest;
             var routeNum;
             for(var i = 0; i < possibleRoute.length; i++) {
-              var routeName = possibleRoute[i][0]; //route number...
-              var routeColor = possibleRoute[i][1]; //route hex color...
-              var singleRoute = route[routeName]; // ['abbr', 'abbr', 'abbr', 'abbr'.....]
+              var routeName = possibleRoute[i][0]; 
+              var routeColor = possibleRoute[i][1];
+              var singleRoute = route[routeName]; 
               for(var j = 0; j < etdForAllStation.length; j++) {
                 var eachStation = etdForAllStation[j];
                 for(var k = 0; k < eachStation.length; k++) {

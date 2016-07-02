@@ -1,5 +1,4 @@
 'use strict';
-
 angular.module('app.index', [])
 
 .controller('indexController', ['$scope', '$location', 'Bart', function($scope, $location, Bart) {
@@ -30,5 +29,5 @@ angular.module('app.index', [])
     } else {
       $scope.delay = delay;
     }
-  })
+  });
 }]);
