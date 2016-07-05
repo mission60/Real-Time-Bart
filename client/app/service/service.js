@@ -39,7 +39,7 @@ angular.module('app.service', [])
       url:'/api/advisories'
     })
     .then(function(resp) {
-      return resp.data.root.bsa.description;
+      return resp.data.root.bsa;
     })
   }
   return {
