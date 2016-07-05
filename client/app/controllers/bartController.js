@@ -13,6 +13,14 @@ angular.module('app.bartInfo', [])
   .then(function(getTrainTime) {
     return getTrainTime;
   });
+
+  Bart.getAdvisories()
+  .then(function(delay) {
+    if(delay.description === 'No delays reported.') {
+      $scope.delay = '';
+    }
+      $scope.delay = delay;
+  });
 }])
 .directive('d3Stations', [function() {
   return {
@@ -94,7 +102,6 @@ angular.module('app.bartInfo', [])
               color = item.estimate.hexcolor;
               minutes = item.estimate.minutes;
             }
-
             accum.push({
               abbr: info.abbr,
               name: info.name,
@@ -139,21 +146,6 @@ angular.module('app.bartInfo', [])
         var point = map.latLngToLayerPoint(L.latLng(latlng));
         return point;
       } 
-      function plotTrain(point1, point2, percentage) {
-        var point = [point1, point2];
-        var distance = Math.sqrt(Math.pow((point1.x-point2.x), 2) + Math.pow((point1.y-point2.y), 2));        
-        
-        var middle = [{lat: (point1.lat*percentage)+(point2.lat*(1-percentage)), lng: (point1.lng*percentage)+(point2.lng*(1-percentage))}];
-        console.log('middle', middle);
-        var dot = g.selectAll('image')
-                  .data(middle)
-                  .enter().append('image')
-                  .attr('xlink:href', '../pics/Bart.gif')
-                  .attr('x', function(d) { return project({lat: d.lat, lng: d.lng}).x; })
-                  .attr('y', function(d) { return project({lat: d.lat, lng: d.lng}).y - 10; })
-                  .attr('width', '30px')
-                  .attr('height', '30px');
-      }
 
       scope.getEtd = getEtd;
       var station;
@@ -162,7 +154,6 @@ angular.module('app.bartInfo', [])
           return;
         }     
         // canvas.selectAll('*').remove();
-
         data.station.forEach(function(d) {
           d.lat = d.gtfs_latitude;
           d.lng = d.gtfs_longitude;
@@ -201,9 +192,6 @@ angular.module('app.bartInfo', [])
                     .text(function(d) { return d.abbr; })
         
         function update() {
-          // We need to reposition our SVG and our containing group when the map
-          // repositions via zoom or pan
-          // https://github.com/zetter/voronoi-maps/blob/master/lib/voronoi_map.js
           var bounds = map.getBounds();
           var topLeft = map.latLngToLayerPoint(bounds.getNorthWest())
           var bottomRight = map.latLngToLayerPoint(bounds.getSouthEast())
@@ -212,8 +200,6 @@ angular.module('app.bartInfo', [])
                 .style('left', topLeft.x + 'px')
                 .style('top', topLeft.y + 'px');
           g.attr('transform', 'translate(' + -topLeft.x + ',' + -topLeft.y + ')');
-
-          // We reproject our data with the updated projection from leaflet
           station.attr({
             cx: function(d) { return project({lat: d.lat, lng: d.lng}).x; },
             cy: function(d) { return project({lat: d.lat, lng: d.lng}).y; }
@@ -227,7 +213,6 @@ angular.module('app.bartInfo', [])
           update();
         });
         map.on('move', update);
-        // render our initial visualization
         update();
       };
       
@@ -331,11 +316,9 @@ angular.module('app.bartInfo', [])
               station1 = rte[bestStationIdx];
               station2 = (bestStationIdx === 0) ? rte[0] : rte[bestStationIdx+1];
               time = routeInfo[rte[bestStationIdx+1]][dest][0];
-              // alert('Next train is coming in ' + timeForNextTrain + ' min.\nTrain is in between ' + station1 + ' and ' + station2 + ' and is ' + (routeInfo[rte[bestStationIdx+1]][dest][0]) + ' min away to ' + rte[bestStationIdx+1]);
               function plotTrain(point1, point2, percentage) {
                 var point = [point1, point2];
                 var distance = Math.sqrt(Math.pow((point1.x-point2.x), 2) + Math.pow((point1.y-point2.y), 2));        
-                
                 var middle = [{lat: (point1.lat*percentage)+(point2.lat*(1-percentage)), lng: (point1.lng*percentage)+(point2.lng*(1-percentage))}];
                 console.log('middle', middle);
                 var dot = g.selectAll('image')
@@ -352,7 +335,7 @@ angular.module('app.bartInfo', [])
                                 .duration(200)
                                 .style('opacity', 0.9)
                             tip.html('Next train is coming in ' + timeForNextTrain + ' min.\nTrain is in between ' + station1 + ' and ' + station2 + ' and is ' + (routeInfo[rte[bestStationIdx+1]][dest][0]) + ' min away to ' + rte[bestStationIdx+1])
-                                .style('left', (page.pageX + 3) + 'px')   
+                                .style('left', (page.pageX + 5) + 'px')   
                                 .style('top', (page.pageY - 20) + 'px'); 
                           })
                           .on('mouseout', function(d) {
@@ -375,7 +358,6 @@ angular.module('app.bartInfo', [])
                 }
                 return accum;
               }, {});
-              // return ans;
               plotTrain(station1Point, station2Point, 0.5);
             }
             findClosestTrain(routeTimeSheet, station, nextTrainDest);
@@ -388,8 +370,6 @@ angular.module('app.bartInfo', [])
             var destStation = scope.stationList.station.filter(function(item) {
               return item.abbr === scope.destination;
             });
-            
-            // console.log('station1Point', station1Point);
             var departing = station
                             .filter(function(d) {
                               return d.abbr === depStation[0].abbr;
