@@ -16,7 +16,7 @@ angular.module('app.bartInfo', [])
 
   Bart.getAdvisories()
   .then(function(delay) {
-    if(delay === 'No delays reported.') {
+    if(delay.description === 'No delays reported.') {
       $scope.delay = '';
     }
       $scope.delay = delay;

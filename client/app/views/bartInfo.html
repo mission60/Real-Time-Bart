@@ -1,6 +1,5 @@
-<div ng-if="delay" ng-repeat="news in delay">
-  <p class="glyphicon glyphicon-flag"></p>
-  <tr class="info">{{news.description}}</tr>
+<div class="info" ng-if="delay" ng-repeat="news in delay">
+  <tr>{{news.description}}</tr>
 </div>
 <div id="map" style="position: absolute; height: 100%; width: 100%;">
   <d3-stations data="stationList"></d3-stations>
