@@ -13,6 +13,15 @@ angular.module('app.bartInfo', [])
   .then(function(getTrainTime) {
     return getTrainTime;
   });
+
+  Bart.getAdvisories()
+  .then(function(delay) {
+    if(delay === 'No delays reported.') {
+      $scope.delay = '';
+    } else {
+      $scope.delay = delay;
+    }
+  });
 }])
 .directive('d3Stations', [function() {
   return {
@@ -331,7 +340,6 @@ angular.module('app.bartInfo', [])
               station1 = rte[bestStationIdx];
               station2 = (bestStationIdx === 0) ? rte[0] : rte[bestStationIdx+1];
               time = routeInfo[rte[bestStationIdx+1]][dest][0];
-              // alert('Next train is coming in ' + timeForNextTrain + ' min.\nTrain is in between ' + station1 + ' and ' + station2 + ' and is ' + (routeInfo[rte[bestStationIdx+1]][dest][0]) + ' min away to ' + rte[bestStationIdx+1]);
               function plotTrain(point1, point2, percentage) {
                 var point = [point1, point2];
                 var distance = Math.sqrt(Math.pow((point1.x-point2.x), 2) + Math.pow((point1.y-point2.y), 2));        
@@ -388,8 +396,6 @@ angular.module('app.bartInfo', [])
             var destStation = scope.stationList.station.filter(function(item) {
               return item.abbr === scope.destination;
             });
-            
-            // console.log('station1Point', station1Point);
             var departing = station
                             .filter(function(d) {
                               return d.abbr === depStation[0].abbr;
