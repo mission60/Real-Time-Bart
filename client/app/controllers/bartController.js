@@ -174,7 +174,7 @@ angular.module('app.bartInfo', [])
                       tip.transition()
                           .duration(200)
                           .style('opacity', 0.9);
-                      tip .html('Station: ' + info.name + '<br/>' + getDestAndTime(getEtd(info)) + '<br/>')
+                      tip .html("<p style='font-size:20px'> Station: " + info.name + "</p>" + "<p style='font-size:16px'>" + getDestAndTime(getEtd(info)) + "</p>")
                           .style('left', (page.pageX + 10) + 'px')   
                           .style('top', (page.pageY - 50) + 'px'); 
                     });
