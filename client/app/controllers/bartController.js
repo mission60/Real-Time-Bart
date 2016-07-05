@@ -334,7 +334,7 @@ angular.module('app.bartInfo', [])
                             tip.transition()
                                 .duration(200)
                                 .style('opacity', 0.9)
-                            tip.html("<p style='font-size:16px'>Next train is coming in " + timeForNextTrain + "</p>" + '<p style='font-size:16px'>' + 'min.\nTrain is in between ' + station1 + ' and ' + station2 + ' and is ' + (routeInfo[rte[bestStationIdx+1]][dest][0]) + ' min away to ' + rte[bestStationIdx+1] + '</p>')
+                            tip.html('<p style='font-size:16px'>Next train is coming in ' + timeForNextTrain + '</p>' + '<p style='font-size:16px'>' + 'min.\nTrain is in between ' + station1 + ' and ' + station2 + ' and is ' + (routeInfo[rte[bestStationIdx+1]][dest][0]) + ' min away to ' + rte[bestStationIdx+1] + '</p>')
                                 .style('left', (page.pageX + 5) + 'px')   
                                 .style('top', (page.pageY - 20) + 'px'); 
                           })
