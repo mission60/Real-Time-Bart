@@ -13,7 +13,7 @@ div.destination {
 
 div.tooltip {
   position: absolute;
-  width: 400px;                  
+  width: relative;                  
   height: relative;                 
   padding: 2px;             
   font: 12px sans-serif;        
